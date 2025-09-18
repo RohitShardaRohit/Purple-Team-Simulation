@@ -131,3 +131,9 @@ SSH traffic: tcp.port == 22
 
 Filter packets to/from attacker and victim IPs: ip.addr == <kali-ip> && ip.addr == <ubuntu-ip>
 ```
+OR
+
+Follow the Network Traffic Analysis repo for analyzing Wireshark pcap files:
+```bash
+https://github.com/RohitShardaRohit/Network-Traffic-Analysis/blob/main/README.md
+```

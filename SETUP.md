@@ -52,7 +52,6 @@ For reproducible results use a private network that both VMs share:
 
 After powering VMs on, verify each VM has an IP on the private subnet:
 ```bash
- on each VM
 ip -4 addr show
 # or
 hostname -I
@@ -62,5 +61,73 @@ You should see addresses like 192.168.56.x or 10.0.2.x. Note the Kali and Ubuntu
 
 ## 4) Base packages & prep
 
+On both VMs (run these as a user with sudo):
+```bash
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y openssh-server nmap netcat tcpdump vim
+```
 
+Ubuntu (victim) — ensure SSH is running:
+```bash
+sudo systemctl enable --now ssh
+sudo ss -lnpt | grep ':22'    # confirm sshd is listening
+```
 
+## 5) Connectivity checks
+
+From Kali test reachability to Ubuntu:
+```bash
+# replace <ubuntu-ip>
+nc -vz <ubuntu-ip> 22    # TCP connect test for SSH
+ping -c 3 <ubuntu-ip>    # may be blocked; optional
+```
+
+If nc shows "succeeded", TCP path is good. If it fails:
+
+-Confirm both VMs are on the same private network.
+-Confirm sshd is running on Ubuntu.
+-Check firewall on Ubuntu: sudo ufw status.
+
+## 6) Attack simulation commands (Kali → Ubuntu)
+
+Use these exact commands in the demo. Replace <ubuntu-ip>
+
+1. Discovery & Recon
+```bash
+# Aggressive scan (service/version/os detection)
+nmap -A <ubuntu-ip>
+
+# Stealth SYN scan (half-open)
+nmap -sS <ubuntu-ip>
+
+# Quick top ports + service versions
+nmap -sV -p- --top-ports 100 <ubuntu-ip>
+```
+
+2. Targeted check for SSH
+```bash
+nmap -p 22 --script ssh2-enum-algos <ubuntu-ip>
+```
+
+3. Optional repeated probing to simulate persistent reconnaissance
+```bash
+for i in {1..5}; do nmap -sS -p 1-1024 <ubuntu-ip>; sleep 2; done
+```
+
+7) Packet capture & Wireshark filters
+
+1. Open wireshark on Ubuntu
+```bash
+sudo wireshark
+```
+
+2. Find the ip connection to where you simulated the attacks (Either en0ps8 or en0ps9)
+
+3. Open the pcap in Wireshark and use these filters if desired:
+```bash
+SYN scan (stealth recon): tcp.flags.syn == 1 && tcp.flags.ack == 0
+
+SSH traffic: tcp.port == 22
+
+Filter packets to/from attacker and victim IPs: ip.addr == <kali-ip> && ip.addr == <ubuntu-ip>
+```

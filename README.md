@@ -8,6 +8,7 @@ The objective of this project is to simulate a real-world attack from an attacke
 - Captured results and recorded a short demo video showing the attack steps and outcomes.
 
 **Why this is useful:**  
+
 A compact, repeatable purple-team lab to rehearse detection, incident response steps, and to demonstrate attacker tradecraft for interviews or training.
 
 ---
@@ -15,8 +16,7 @@ A compact, repeatable purple-team lab to rehearse detection, incident response s
 ## Repo contents
 - `README.md` — this file (project summary).  
 - `SETUP.md` — exact VM downloads, VirtualBox networking, and the commands you can run to reproduce the sim.  
-- `DEMO.md` — a simple place to paste your demo video link and short transcript / timestamps.  
-- (optional) `pcaps/`, `media/` — put any captured artifacts or screenshots here.
+- `DEMO.md` — Demo video link and short transcript 
 
 ---
 
